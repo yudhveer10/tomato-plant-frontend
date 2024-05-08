@@ -5,85 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Upload</title>
     <style>
-        *{
-            margin: px;
-            padding:  30px 0px 10px 10%;
-            box-sizing: border-box;
-        } 
-            
         body {
-                font-family: 'Poppins', sans-serif;
-                background-image: url('3.jpg');
-                position: fixed;
-                background-repeat: no-repeat;
-	            background-position: center;
-	            background-size: cover;
-	            background-attachment: fixed
-            
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #185fa1;
+        }
 
-               
-            }
-        
+        .container {
+            text-align: center;
+            width: 450px;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-        form {
-               
-                display: flex;
-                flex-wrap: wrap;
-               align-items: center;
-            }
+        h1 {
+            margin-bottom: 30px;
+        }
 
-                                   
-        button { 
-                  background-image: linear-gradient(to right,#ff8c00 ,#ff0080); 
-                         background-color:#ff0080 ;
-                        color: white;
-                        font-size: 14px;
-                        padding: 10px 20px;
-                        border: none;
-                        cursor: pointer;
-                        transition: all 0.3s ease;
-                 }
-                                     
-                    
-        input {
-                     width: 100%;
-                    padding: 16px 16px;
-                    outline: none;
-                    border: 1px solid rgb(0, 0, 0);
-                    box-shadow: inset 0 -2px 0 rgba(70, 70, 70, 0.1), 0 -2px
-                                 0 rgba(70, 70, 70, 0.1);
-                    transition: all 0.3s ease;
-                    cursor: pointer;
-                    &::placeholder{
-                                    color: gray;
-                                    opacity: 1;
-                                }
-            }
+        #fileInput {
+            margin-bottom: 20px;
+        }
 
-     
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #prediction {
+            margin-top: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
-<body class="imgg">
+<body>
+    <div class="container">
+        <h1>Upload Tomato Plant Image</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput">
+            <button type="submit">Upload</button>
+        </form>
+        <div id="prediction"></div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+            formData.append('file', fileInput.files[0]);
 
-    <form action="http://your-server.com/upload" enctype="multipart/form-data" method="post">
-  <p>
-    What is your name?
-    <input type="text" style="background-color: rgb(211, 202, 202); font-size:20px;"  placeholder="Name" name="submit-name">
-    
-    <br>
-    <br>
-
-    <!-- What files are you sending? --> <input type="file" style=" font-size: 22px; "name="files" multiple> 
-
-    <input type="submit" value="Upload" style="background-color: rgb(92, 172, 237);  font-size: 25px;"> 
-
-    <input type="reset" style="background-color: rgb(66, 146, 211);   font-size: 25px; border-style:solid;">
-
-  </p>
-</form>
-
-
+            try {
+                const response = await axios.post('http://localhost:5000/predict_image', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                document.getElementById('prediction').innerText = `Prediction: ${response.data.prediction}`;
+            } catch (error) {
+                console.error(error);
+            }
+        });
+    </script>
 </body>
 </html>
